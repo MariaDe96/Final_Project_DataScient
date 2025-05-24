@@ -1,0 +1,98 @@
+"HHADULT",          # Número de otros adultos (≥18 años) que viven en el hogar, excluyendo al encuestado
+"SEXVAR",           # Variable derivada que rellena usando _SEX o CELLSEX1 si falta sexo del encuestado
+"PERSDOC3",         # ¿Tiene médico personal?
+"MEDCOST1",         # ¿Dejó de ir al médico por falta de dinero?
+"EXERANY2",         # ¿Ha hecho ejercicio en el último mes?
+"SLEPTIM1",         # Horas promedio que duerme por noche
+"CVDINFR4",         # ¿Ha tenido un infarto?
+"CVDSTRK3",         # ¿Ha sufrido un derrame cerebral?
+"ADDEPEV3",         # ¿Alguna vez diagnosticado con depresión?
+"DIABETE4",         # ¿Tiene diabetes?
+"MARITAL",          # Estado civil
+"RENTHOM1",         # ¿Vive en casa alquilada, propia, u otra?
+"VETERAN3",         # ¿Es veterano de guerra?
+"EMPLOY1",          # Estado laboral
+"DECIDE",           # Dificultad para concentrarse o tomar decisiones
+"DIFFALON",         # Dificultad para estar solo o realizar actividades solo
+"_RFHLTH",          # Indicador de salud general autopercibida deficiente
+"_PHYS14D",         # Indicador binario de si la persona tuvo 14 o más días de mala salud física en el último mes
+"_MENT14D",         # Indicador binario de si la persona tuvo 14 o más días de mala salud mental en el último mes
+"_HLTHPLN",         # Indicador binario de si la persona tiene un seguro o plan de salud
+"_TOTINDA",         # Indicador de si la persona realiza algún tipo de actividad física o ejercicio fuera del trabajo habitual
+"_EXTETH3",         # Agrupación étnica/racial extendida
+"_MICHD",           # Indicador derivado de enfermedad cardíaca isquémica (IAM o angina)
+"_ASTHMS1",         # Estado categórico del asma de una persona
+"_DRDXAR2",         # Indicador de si un médico ha diagnosticado al encuestado con artritis, gota, lupus o fibromialgia
+"_AGEG5YR",         # Edad en grupos de 5 años (18–24, 25–29, ...)
+"_BMI5CAT",         # IMC en categorías (bajo peso, normal, etc.)
+"_CHLDCNT",         # Indica cuántos niños menores de 18 años viven con el encuestado
+"_EDUCAG",          # Nivel educativo agrupado
+"_INCOMG1",         # Rango de ingresos anuales
+"_RFSMOK3",         # Riesgo actual por tabaquismo
+"DRNKANY6",         # ¿Ha bebido alcohol en los últimos 30 días?
+"_RFBING6",         # Indicador de binge drinking (consumo excesivo)
+"_AIDTST4",         # ¿Se ha hecho prueba de VIH alguna vez?
+"SMOKE100",     # ¿Ha fumado al menos 100 cigarrillos en toda su vida?
+"USENOW3",      # ¿Fuma cigarrillos actualmente (todos los días, algunos días, o no fuma)?
+"ECIGNOW2",     # ¿Utiliza cigarrillos electrónicos actualmente?
+"ALCDAY4",      # Frecuencia con la que consume alcohol (en días al mes o a la semana)
+"AVEDRNK3",     # Promedio de bebidas alcohólicas consumidas en los días en que bebe
+"DRNK3GE5",     # ¿Ha consumido 5 o más bebidas alcohólicas en una sola ocasión en los últimos 30 días?
+"MAXDRNKS",     # Mayor número de bebidas alcohólicas consumidas en un solo día durante el último mes
+"HIVRISK5",     # ¿Participa en conductas que lo ponen en riesgo de contraer el VIH?
+"COVIDPOS",     # ¿Alguna vez ha dado positivo en una prueba de COVID-19?
+"HADHYST2",     # ¿Le han practicado una histerectomía?
+"COLNCNCR",     # ¿Alguna vez le han dicho que tiene cáncer de colon?
+"FLUSHOT7",     # ¿Recibió una vacuna contra la gripe en los últimos 12 meses?
+'ACEDEPRS', # EXPERIENCIAS MALAS con depresion
+'LSATISFY', # Nivel de sastifacion con la vida
+'EMTSUPRT', # Disponibilidad de opoyo emocional 
+'SDHISOLT', # Sentimientos de aislamiento social
+'ACEDRINK', # Exposición al alcoholismo en el hogar durante la infancia
+'ACEDRUGS', # Exposición al consumo de drogas en el hogar durante la infancia
+'ACEPRISN', # Tener un familiar en prisión durante la infancia
+'ACEDIVRC', # Experiencia de divorcio de los padres
+'ACEHURT1', # Haber sufrido abuso físico en la infancia
+'ACESWEAR', # Exposicion a lenguaje abusivo o insultos en el hogar
+'ACETOUCH', # Haber sufrido abuso sexual en la infancia
+'ACETTHEM', # Haber sido testigo de violencia doméstica
+'ACEHVSEX', # Haber sido forzado a tener relaciones sexuales
+'SDHEMPLY', # Dificultades laborales o desempleo
+'SDHFOOD1', # Acceso limitado a alimentos
+'SDHUTILS', # Problemas para pagar servicios básico
+'SDHBILLS', # Dificultades para pagar facturas
+'SDHTRNSP', # Dificultades para acceder a transporte
+'CDSOCIAL', # Nivel de interacción social
+'CDDISCUS', # Frecuencia con la que la persona habla sobre sus problemas
+'CAREGIV1', # Si la persona es cuidador de alguien más
+'CRGVREL4', # Relación con la persona a la que cuid
+'CRGVLNG1', # Tiempo que lleva cuidando a alguien
+'CRGVHRS1', # Horas dedicadas al cuidado
+'MARIJAN1', # MARIHUANA 
+'MARJSMOK',  # MARIHUANA FUMADA
+'MARJEAT', # MARIHUANA 
+'MARJVAPE', # MARIHUANA 
+'MARJDAB', # MARIHUANA 
+'MARJOTHR',# MARIHUNA 
+'ASBIALCH', # CONSUMO DE ALCOHOL
+'ASBIDRNK', # CONSUMODE DE ALCOHOL 
+'ASBIBING', # CONSUMO DE ALCOHOL
+'FIREARM5', # Presencia de armas de fuego en el hogar
+'GUNLOAD', # Si las armas están cargadas
+'LOADULK2', # Acceso fácil a armas de fuego
+
+# Lista de columnas que ya hemos combinado en variables nuevas
+columnas_a_eliminar = [
+ 'SMOKE100', 'USENOW3', 'DRNK3GE5', 'MAXDRNKS',     # Tabaquismo y alcohol 
+ 'MARIJAN1', 'MARJSMOK', 'MARJEAT', 'MARJVAPE', 'MARJDAB', 'MARJOTHR',    # Marihuana (añadido MARIJAN1 como indicaste)
+ 'ACEDRINK', 'ACEDRUGS', 'ACEPRISN', 'ACEDIVRC', 'ACEHURT1', 'ACESWEAR', 'ACETOUCH', 'ACETTHEM', 'ACEHVSEX',     # ACEs
+ 'EMTSUPRT', 'CDSOCIAL', 'CDDISCUS',     # Apoyo social
+ '_TOTINDA', 'EXERANY2',    # Actividad física
+ 'CVDINFR4', 'CVDSTRK3', 'DIABETE4', '_MICHD', '_ASTHMS1', 'COLNCNCR', # Comorbilidades físicas
+ '_RFHLTH', '_PHYS14D', # Salud general
+ 'COVIDPOS', 'HIVRISK5', '_AIDTST4', # Riesgo infeccioso
+ 'SDHEMPLY', 'SDHFOOD1', 'SDHUTILS', 'SDHBILLS', 'SDHTRNSP'   # Vulnerabilidad social
+]
+# Eliminar columnas originales redundantes (solo si existen en data_new)
+columnas_existentes = data_new.columns.intersection(columnas_a_eliminar)
+data_new.drop(columns=columnas_existentes, inplace=True)
