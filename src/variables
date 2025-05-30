@@ -96,3 +96,7 @@ columnas_a_eliminar = [
 # Eliminar columnas originales redundantes (solo si existen en data_new)
 columnas_existentes = data_new.columns.intersection(columnas_a_eliminar)
 data_new.drop(columns=columnas_existentes, inplace=True)
+
+#data_new.to_csv('data_limpia.csv', index=False) Para las columnas de 53
+#data_new.to_csv('data_limpia.csv.gz', index=False, compression='gzip')
+
