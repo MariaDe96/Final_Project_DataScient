@@ -1,6 +1,8 @@
-numpy>=1.24.2
-pandas>=1.5.3
-requests>=2.27.1
-joblib
-catboost
 streamlit
+pickle
+pandas
+numpy
+matplotlib
+catboost
+fpdf
+io
