@@ -17,7 +17,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # ---- CARGA DEL MODELO ----
-with open("/workspaces/Final_Project_DataScient/models/modelo_catboost.pkl", "rb") as file:
+with open("modelo_catboost.pkl", "rb") as file:
     model = pickle.load(file)
 
 # ---- OPCIONES DE ENCODING ----
