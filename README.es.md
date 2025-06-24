@@ -1,112 +1,137 @@
-# Plantilla de Proyecto de Ciencia de Datos
+# 🧠 Predicción de la Depresión con BRFSS 2022
 
-Esta plantilla está diseñada para impulsar proyectos de ciencia de datos proporcionando una configuración básica para conexiones de base de datos, procesamiento de datos, y desarrollo de modelos de aprendizaje automático. Incluye una organización estructurada de carpetas para tus conjuntos de datos y un conjunto de paquetes de Python predefinidos necesarios para la mayoría de las tareas de ciencia de datos.
+## 🎯 Objetivo del proyecto
+El objetivo de este proyecto es contribuir a la **prevención temprana de la depresión** mediante la creación de un algoritmo de clasificación que permita predecirla a partir de diversos factores, tales como:
 
-## Estructura
+- **Factores demográficos** (edad, género, estado civil, nivel educativo),
+- **Salud física y hábitos de vida** (actividad física, calidad del sueño, hábitos de consumo),
+- **Experiencias traumáticas o conductas de riesgo**.
 
-El proyecto está organizado de la siguiente manera:
+Esta aproximación busca apoyar la detección temprana de personas en riesgo y facilitar la implementación de estrategias preventivas en el ámbito de la salud pública.
 
-- **`src/app.py`** → Script principal de Python donde correrá tu proyecto.
-- **`src/explore.ipynb`** → Notebook para exploración y pruebas. Una vez finalizada la exploración, migra el código limpio a `app.py`.
-- **`src/utils.py`** → Funciones auxiliares, como conexión a bases de datos.
-- **`requirements.txt`** → Lista de paquetes de Python necesarios.
-- **`models/`** → Contendrá tus clases de modelos SQLAlchemy.
-- **`data/`** → Almacena los datasets en diferentes etapas:
-  - **`data/raw/`** → Datos sin procesar.
-  - **`data/interim/`** → Datos transformados temporalmente.
-  - **`data/processed/`** → Datos listos para análisis.
+---
 
+## 📊 Origen de los datos
+Los datos utilizados en este proyecto provienen del **Behavioral Risk Factor Surveillance System (BRFSS)**, que es el sistema de encuestas de salud por teléfono más importante de EE. UU. El BRFSS recopila datos a nivel estatal sobre residentes, abordando aspectos como:
 
-## ⚡ Configuración Inicial en Codespaces (Recomendado)
+- Comportamientos de riesgo para la salud,
+- Condiciones de enfermedades crónicas,
+- Uso de servicios de prevención.
 
-No es necesario realizar ninguna configuración manual, ya que **Codespaces se configura automáticamente** con los archivos predefinidos que ha creado la academia para ti. Simplemente sigue estos pasos:
+Se seleccionó la **data de 2022** por ser la versión más reciente y completa al momento de iniciar el proyecto.
 
-1. **Espera a que el entorno se configure automáticamente**.
-   - Todos los paquetes necesarios y la base de datos se instalarán por sí mismos.
-   - El `username` y `db_name` creados automáticamente están en el archivo **`.env`** en la raíz del proyecto.
-2. **Una vez que Codespaces esté listo, puedes comenzar a trabajar inmediatamente**.
+---
 
+## 📋 Sobre el dataset
+El dataset utilizado refleja casi **medio millón de personas encuestadas** y contiene **328 variables** (features), abarcando una amplia variedad de aspectos relacionados con la persona y la entrevista. Sin embargo:
 
-## 💻 Configuración en Local (Solo si no puedes usar Codespaces)
+- Muchas variables no eran relevantes para nuestro análisis (e.g., detalles sobre la fecha de la encuesta, la forma en que se realizó, la ubicación geográfica, etc.).
+- Gran cantidad de registros presentaban **valores nulos** o códigos para representar la **no respuesta voluntaria**, lo que requirió un tratamiento específico para su correcta interpretación o eliminación.
+- Existen variables que son **cálculos derivados** proporcionados por el propio BRFSS (e.g., índice de masa corporal), calculadas a partir de otras variables base.
 
-**Prerrequisitos**
+Esta situación requirió una cuidadosa **fase de preparación y limpieza de datos** para garantizar que solo la información relevante y de calidad estuviera presente en el análisis final.
 
-Asegúrate de tener Python 3.11+ instalado en tu máquina. También necesitarás pip para instalar los paquetes de Python.
+---
 
-**Instalación**
+## 🔍 Tratamiento y selección de features
+Se realizó un **proceso de selección en dos etapas** para reducir el dataset inicial de 328 variables a un conjunto final de 39 **features**:
 
-Clona el repositorio del proyecto en tu máquina local.
+1. **Primera selección**: Se preseleccionaron 79 variables con base en la relevancia de la pregunta y la variedad de aspectos cubiertos (socioeconómicos, demográficos, hábitos de vida, estado de salud, etc.).
 
-Navega hasta el directorio del proyecto e instala los paquetes de Python requeridos:
+2. **Segunda selección**:
+    - Se descartaron variables con un **alto porcentaje de nulos** o cuyos datos estuvieran representados por códigos de no respuesta.
+    - Se eliminaron variables **redundantes**, priorizando aquellas calculadas por el BRFSS que resumían de manera clara conceptos básicos (e.g., índice de masa corporal o puntajes para representar diferentes tipos de **consumo de nicotina**).
 
-```bash
-pip install -r requirements.txt
-```
+De esta manera, alcanzamos un conjunto final de **39 features**.
 
-**Crear una base de datos (si es necesario)**
+> ⚠️ Es importante destacar que este análisis quedó limitado a personas de **más de 45 años**, dado que para rangos de edad más jóvenes la cantidad de registros válidos y consistentes era insuficiente. Se recomienda para futuras etapas profundizar en el **tratamiento de datos nulos**, de manera que pueda ampliarse el análisis a otras franjas de edad.
 
-Crea una nueva base de datos dentro del motor Postgres personalizando y ejecutando el siguiente comando: 
+---
 
-```bash
-$ psql -U postgres -c "DO \$\$ BEGIN 
-    CREATE USER mi_usuario WITH PASSWORD 'mi_contraseña'; 
-    CREATE DATABASE mi_base_de_datos OWNER mi_usuario; 
-END \$\$;"
-```
-Conéctate al motor Postgres para usar tu base de datos, manipular tablas y datos: 
+## 🔄 Recodificación y tratamiento de datos
+Los datos del BRFSS venían **codificados de origen**, asignando diferentes códigos numéricos a cada categoría de respuesta. Sin embargo:
 
-```bash
-$ psql -U mi_usuario -d mi_base_de_datos
-```
+- No seguían un **patrón claro y estándar**, especialmente para variables ordinales, por lo que fue necesario un **proceso de recodificación manual** para garantizar que:
+    - Las respuestas **binarias** estuvieran en formato estándar (`0 = No` / `1 = Sí`).
+    - Las respuestas **ordinales** estuvieran correctamente alineadas para reflejar la progresión lógica de menor a mayor intensidad, frecuencia o importancia.
+- Se realizó un análisis de **outliers** para detectar y **excluir registros atípicos**, garantizando que no afectan al análisis ni al modelado.
 
-¡Una vez que estés dentro de PSQL podrás crear tablas, hacer consultas, insertar, actualizar o eliminar datos y mucho más!
+Contando con un volumen de datos lo suficientemente amplio, esta depuración no comprometió la robustez de los modelos, pero sí contribuyó a obtener un dataset más claro, coherente y significativo para representar la realidad analizada.
 
-**Variables de entorno**
+---
 
-Crea un archivo .env en el directorio raíz del proyecto para almacenar tus variables de entorno, como tu cadena de conexión a la base de datos:
+## 📊 Análisis gráfico
+Se llevó a cabo un análisis gráfico para evaluar la incidencia de cada variable en relación a la variable objetivo (**ADDEPEV3**), con el fin de obtener una primera aproximación a los factores clave para la predicción de la depresión.
 
-```makefile
-DATABASE_URL="postgresql://<USUARIO>:<CONTRASEÑA>@<HOST>:<PUERTO>/<NOMBRE_BD>"
+Por ejemplo, en la imagen a continuación se observa que, en el caso de la variable de género, las **mujeres** (codificadas como 1) presentan un porcentaje mayor de personas con depresión en comparación con los hombres:
 
-#example
-DATABASE_URL="postgresql://mi_usuario:mi_contraseña@localhost:5432/mi_base_de_datos"
-```
+![Incidencia de la depresión por género](data/image_1.png)
 
-## Ejecutando la Aplicación
+También es importante destacar que la variable objetivo (**ADDEPEV3**) presenta un marcado desbalance: alrededor del **80% de los registros corresponden a casos negativos** y un **20% a casos positivos**, lo cual es típico en este tipo de estudios médicos y de salud mental.
 
-Para ejecutar la aplicación, ejecuta el script app.py desde la raíz del directorio del proyecto:
+Esta situación de desbalance guió posteriormente la selección de técnicas para el modelado, especialmente en la evaluación de métricas para valorar la capacidad del modelo para detectar correctamente los casos positivos.
 
-```bash
-python src/app.py
-```
+---
 
-## Añadiendo Modelos
+## 🤖 Modelado y evaluación de modelos
+Se probaron diferentes enfoques para obtener un modelo que generalizara bien y atendiera correctamente al desbalance presente en la variable objetivo. Se evaluaron tanto modelos lineales (**Regresión Logística**, **KNN**) como modelos no lineales (**Random Forest**, **XGBoost**, **CatBoost**) e incluso **redes neuronales** simples.
 
-Para añadir clases de modelos SQLAlchemy, crea nuevos archivos de script de Python dentro del directorio models/. Estas clases deben ser definidas de acuerdo a tu esquema de base de datos.
+El objetivo principal fue maximizar **Recall** y **Precisión**, sin perder de vista un **Accuracy** aceptable, considerando que en este tipo de problema médico la prioridad es **no fallar en la detección de casos positivos**, aunque ello implique aceptar una mayor cantidad de falsos positivos.
 
-Definición del modelo de ejemplo (`models/example_model.py`):
+Se decidió mantener la distribución desbalanceada original, para reflejar de manera más fiel la realidad de este fenómeno en la población.
 
-```py
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+Tras la fase de pruebas y ajuste de hiperparámetros, el modelo que mostró el mejor balance global fue **CatBoost** con umbral optimizado, alcanzando los siguientes resultados:
 
-Base = declarative_base()
+### ✅ Resultado Final del Modelo
 
-class ExampleModel(Base):
-    __tablename__ = 'example_table'
-    id: Mapped[int] = mapped_column(primary_key=True)
-    username: Mapped[str] = mapped_column(unique=True)
-```
+| Métrica     | Test  | Train |
+|--------------|------|------|
+| **Accuracy**  | 0.78 | 0.79 |
+| **F1 Score**  | 0.57 | 0.59 |
+| **Precision** | 0.48 | 0.50 |
+| **Recall**    | 0.70 | 0.72 |
 
-## Trabajando con Datos
+Estos resultados indican que el modelo presenta una buena capacidad para detectar personas en riesgo de depresión, alcanzando un **Recall** alrededor del 70%, lo que respalda su utilidad para apoyar en estrategias de prevención e intervención tempranas.
 
-Puedes colocar tus conjuntos de datos brutos en el directorio data/raw, conjuntos de datos intermedios en data/interim, y los conjuntos de datos procesados listos para el análisis en data/processed.
+---
 
-Para procesar datos, puedes modificar el script app.py para incluir tus pasos de procesamiento de datos, utilizando pandas para la manipulación y análisis de datos.
+## 🌐 Despliegue en Streamlit
+A continuación se muestran algunas capturas de la **interfaz final en Streamlit**, donde el usuario puede responder a las preguntas del modelo y obtener una **predicción en tiempo real** junto a una **interpretación clara** del resultado.
+https://final-project-datascient.onrender.com/
 
-## Contribuyentes
+<div style="display: flex; justify-content: space-around;">
+  <img src="data/image_2.png" alt="Página principal" width="48%" />
+  <img src="data/image_3.png" alt="Resultado de predicción" width="48%" />
+</div>
 
-Esta plantilla fue construida como parte del [Data Science and Machine Learning Bootcamp](https://4geeksacademy.com/us/coding-bootcamps/datascience-machine-learning) de 4Geeks Academy por [Alejandro Sanchez](https://twitter.com/alesanchezr) y muchos otros contribuyentes. Descubre más sobre [los programas BootCamp de 4Geeks Academy](https://4geeksacademy.com/us/programs) aquí.
+---
 
-Otras plantillas y recursos como este se pueden encontrar en la página de GitHub de la escuela.
+## ✅ Conclusiones
+- El análisis de datos del BRFSS permitió construir un modelo de clasificación robusto para detectar personas en riesgo de depresión, alcanzando un **Recall del 70%** en test, indicador clave para este tipo de problema médico donde la prioridad es no dejar casos sin diagnosticar.
+- El cuidadoso preprocesado de datos, que incluyó selección de variables, recodificación manual y análisis de outliers, resultó esencial para obtener un dataset claro y significativo.
+- El modelo final (CatBoost) alcanzó un balance adecuado entre **Precisión**, **Recall** y **Accuracy**, demostrando su utilidad para apoyar estrategias de prevención e intervención tempranas en contextos de salud pública.
+- El hecho de mantener la distribución desbalanceada original garantiza que los resultados reflejen de manera realista la ocurrencia del fenómeno en la población.
+- A futuro, sería valioso profundizar en el **tratamiento de datos nulos** para poder ampliarse el análisis a otras franjas de edad, especialmente para evaluar la incidencia en personas menores de 45 años.
+- El despliegue en Streamlit proporciona una **herramienta interactiva y explicativa** que podría integrarse en entornos sanitarios para apoyar a profesionales en la toma de decisiones y facilitar la comunicación de resultados a los usuarios.
+
+---
+
+## ⚡️ Limitaciones del Proyecto
+- El análisis está limitado a personas de **más de 45 años**, dado que para otros rangos de edad la cantidad de registros válidos y consistentes era insuficiente para garantizar conclusiones fiables.
+- El modelo refleja la distribución original del BRFSS, que presenta un marcado desbalance (80% casos negativos vs. 20% positivos), lo que limita la capacidad de detectar todas las posibles señales de riesgo.
+- El BRFSS depende de datos autoinformados, lo que puede introducir sesgos y datos imprecisos, especialmente en variables subjetivas (e.g., hábitos de sueño, calidad de vida).
+
+---
+
+## 📚 Referencias
+- [Behavioral Risk Factor Surveillance System (BRFSS) - CDC](https://www.cdc.gov/brfss/index.html): Página oficial de BRFSS.
+- [CatBoost Documentation](https://catboost.ai/docs/concepts/python-reference_catboostclassifier.html): Documentación oficial de CatBoost para detalles de modelado e implementación.
+
+---
+
+## ⚖️ Licencia
+Este proyecto está licenciado bajo la [Licencia MIT](https://opensource.org/licenses/MIT), lo que significa que:
+
+- Puedes usar, copiar, modificar y distribuir este proyecto para cualquier propósito (incluido comercial).
+- Solo debes incluir una copia de esta licencia junto con la mención al autor original.
+- El proyecto se ofrece "tal cual", **sin ninguna garantía** de funcionamiento, responsabilidad o idoneidad para un propósito específico.
