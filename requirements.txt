@@ -9,3 +9,4 @@ xgboost
 tensorflow
 imbalanced-learn==0.12.3
 catboost
+streamlit
