@@ -18,10 +18,12 @@ st.markdown("""
     .card { background-color: white; padding: 2rem; border-radius: 15px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05); margin-bottom: 2rem; }
     .titulo-azul { font-size: 42px; font-weight: 700; color: #1a5276; text-align: center; margin-bottom: 1rem; }
-    .subtitulo-azul { font-size: 24px; font-weight: 600; color: #2e86c1; margin-bottom: 1.5rem; text-align: center; }
     .subtitulo-negro { font-size: 24px; font-weight: 600; color: #212121; text-align: center; margin-bottom: 20px; }
     </style>
 """, unsafe_allow_html=True)
+
+# --- Mostrar título dinámico con emoji ---
+st.markdown(f'<div class="titulo-azul">{pages[st.session_state.get("page", 0)]}</div>', unsafe_allow_html=True)
 
 # --- Aviso ---
 st.markdown("""
@@ -53,6 +55,7 @@ phys_map = {"Cero días": 0, "1-13 días": 1, "14 o más días": 2}
 satisfy_map = {"Muy satisfecho/a": 0, "Satisfecho/a": 1, "Insatisfecho/a": 2, "Muy insatisfecho/a": 3}
 employ_map = {"Empleado": 1, "Desempleado": 2, "Jubilado": 3, "Estudiante": 4,"Otro": 5}
 marital_map = {"Casado/a": 1, "Soltero/a": 2, "Separado/a": 3, "Viudo/a": 4}
+
 # --- Inicialización de estado ---
 if "page" not in st.session_state:
     st.session_state.page = 0
@@ -60,51 +63,56 @@ if "data" not in st.session_state:
     st.session_state.data = {}
 if "phq_answers" not in st.session_state:
     st.session_state.phq_answers = [None] * 9
-
 data = st.session_state.data
 
 # --- Página 0: Datos Generales ---
 if st.session_state.page == 0:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="subtitulo-azul">Datos Generales</div>', unsafe_allow_html=True)
-    data['SEXVAR'] = sex_map[st.radio("Sexo", list(sex_map.keys()))]
-    data['_AGEG5YR'] = edad_map[st.selectbox("Edad", list(edad_map.keys()))]
-    data['_EDUCAG'] = educ_map[st.selectbox("Nivel educativo", list(educ_map.keys()))]
-    data['_INCOMG1'] = income_map[st.selectbox("Nivel de ingresos", list(income_map.keys()))]
-    data['EMPLOY1'] = employ_map[st.selectbox("Situación laboral", list(employ_map.keys()))]
-    data['MARITAL'] = marital_map[st.selectbox("Estado civil", list(marital_map.keys()))]
-
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        data['SEXVAR'] = sex_map[st.radio("Sexo", list(sex_map.keys()))]
+        data['_AGEG5YR'] = edad_map[st.selectbox("Edad", list(edad_map.keys()))]
+        data['_EDUCAG'] = educ_map[st.selectbox("Nivel educativo", list(educ_map.keys()))]
+        data['_INCOMG1'] = income_map[st.selectbox("Nivel de ingresos", list(income_map.keys()))]
+        data['EMPLOY1'] = employ_map[st.selectbox("Situación laboral", list(employ_map.keys()))]
+        data['MARITAL'] = marital_map[st.selectbox("Estado civil", list(marital_map.keys()))]
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Página 1: Salud y Hábitos ---
 elif st.session_state.page == 1:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="subtitulo-azul">Salud y Hábitos</div>', unsafe_allow_html=True)
-    data['SLEPTIM1'] = st.slider("Horas de sueño promedio", 0, 24, 7)
-    data['DECIDE'] = bin_map[st.radio("¿Tiene dificultades para tomar decisiones?", list(bin_map.keys()))]
-    data['SDHISOLT'] = bin_map[st.radio("¿Se siente aislado frecuentemente?", list(bin_map.keys()))]
-    data['_DRDXAR2'] = bin_map[st.radio("¿Diagnóstico profesional de depresión?", list(bin_map.keys()))]
-    data['LSATISFY'] = satisfy_map[st.selectbox("Satisfacción con la vida", list(satisfy_map.keys()))]
-    data['_PHYS14D'] = phys_map[st.radio("Días con problemas físicos en últimas 2 semanas", list(phys_map.keys()))]
-    data['_MENT14D'] = phys_map[st.radio("Días con problemas mentales en últimas 2 semanas", list(phys_map.keys()))]
-    data['_AIDTST4'] = bin_map[st.radio("¿Ha hecho prueba de VIH?", list(bin_map.keys()))]
-    data['_ASTHMS1'] = bin_map[st.radio("¿Tiene diagnóstico de asma?", list(bin_map.keys()))]
+    with st.container():
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        with st.form(key="form_pagina1"):
+            data['SLEPTIM1'] = st.slider("Horas de sueño promedio", 0, 24, 7)
+            data['DECIDE'] = bin_map[st.radio("¿Tiene dificultades para tomar decisiones?", list(bin_map.keys()))]
+            data['SDHISOLT'] = bin_map[st.radio("¿Se siente aislado frecuentemente?", list(bin_map.keys()))]
+            data['_DRDXAR2'] = bin_map[st.radio("¿Diagnóstico profesional de depresión?", list(bin_map.keys()))]
+            data['LSATISFY'] = satisfy_map[st.selectbox("Satisfacción con la vida", list(satisfy_map.keys()))]
+            data['_PHYS14D'] = phys_map[st.radio("Días con problemas físicos en últimas 2 semanas", list(phys_map.keys()))]
+            data['_MENT14D'] = phys_map[st.radio("Días con problemas mentales en últimas 2 semanas", list(phys_map.keys()))]
+            data['_AIDTST4'] = bin_map[st.radio("¿Ha hecho prueba de VIH?", list(bin_map.keys()))]
+            data['_ASTHMS1'] = bin_map[st.radio("¿Tiene diagnóstico de asma?", list(bin_map.keys()))]
 
-    peso = st.number_input("Peso (kg)", min_value=30.0, max_value=200.0, value=70.0)
-    altura = st.number_input("Altura (cm)", min_value=100.0, max_value=220.0, value=170.0)
-    imc = peso / ((altura / 100) ** 2)
-    imc_cat = "Bajo peso" if imc < 18.5 else "Normal" if imc < 25 else "Sobrepeso" if imc < 30 else "Obeso"
-    data['_BMI5CAT'] = bmi_map[imc_cat]
-    data['peso'] = peso
-    data['altura'] = altura
-    st.markdown(f"**IMC:** {imc:.1f} - {imc_cat}")
-    st.session_state.imc = f"{imc:.1f} - {imc_cat}"
-    st.markdown('</div>', unsafe_allow_html=True)
+            peso = st.number_input("Peso (kg)", min_value=30.0, max_value=200.0, value=70.0)
+            altura = st.number_input("Altura (cm)", min_value=100.0, max_value=220.0, value=170.0)
+            imc = peso / ((altura / 100) ** 2)
+            imc_cat = "Bajo peso" if imc < 18.5 else "Normal" if imc < 25 else "Sobrepeso" if imc < 30 else "Obeso"
+            data['_BMI5CAT'] = bmi_map[imc_cat]
+            data['peso'] = peso
+            data['altura'] = altura
+            st.markdown(f"**IMC:** {imc:.1f} - {imc_cat}")
+            st.session_state.imc = f"{imc:.1f} - {imc_cat}"
+
+            submitted = st.form_submit_button("Guardar y continuar ➡️")
+            if submitted:
+                if all(k in data for k in ['SLEPTIM1', 'DECIDE', 'SDHISOLT', '_DRDXAR2', 'LSATISFY', '_PHYS14D', '_MENT14D', '_BMI5CAT', '_AIDTST4', '_ASTHMS1']):
+                    st.session_state.page += 1
+                else:
+                    st.warning("⚠️ Por favor completa todos los campos antes de continuar.")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Página 2: PHQ-9 ---
 elif st.session_state.page == 2:
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('<div class="subtitulo-azul">📝 Cuestionario PHQ-9</div>', unsafe_allow_html=True)
     st.markdown("Contesta cuántas veces te han afectado los siguientes síntomas en las últimas 2 semanas:")
 
     preguntas = [
@@ -124,13 +132,7 @@ elif st.session_state.page == 2:
     for i, pregunta in enumerate(preguntas):
         valor_prev = st.session_state.phq_answers[i]
         index_pred = valor_prev if valor_prev is not None else 0
-
-        resp = st.radio(
-            f"{i+1}. {pregunta}",
-            opciones,
-            key=f"phq_{i}",
-            index=index_pred
-        )
+        resp = st.radio(f"{i+1}. {pregunta}", opciones, key=f"phq_{i}", index=index_pred)
         st.session_state.phq_answers[i] = int(resp.split("(")[1][0])
 
     st.session_state.phq9_score = sum(st.session_state.phq_answers)
@@ -214,21 +216,21 @@ elif st.session_state.page == 3:
     st.markdown('</div>', unsafe_allow_html=True)
 # --- Navegación ---
 def validar_pagina_0(): return all(k in data for k in ['SEXVAR', '_AGEG5YR', '_EDUCAG', '_INCOMG1', 'EMPLOY1', 'MARITAL'])
-def validar_pagina_1(): return all(k in data for k in ['SLEPTIM1', 'DECIDE', 'SDHISOLT', '_DRDXAR2', 'LSATISFY', '_PHYS14D', '_MENT14D', '_BMI5CAT', '_AIDTST4', '_ASTHMS1'])
 def validar_pagina_2(): return None not in st.session_state.phq_answers
 
 col1, col2, col3 = st.columns([1, 2, 1])
 with col1:
-    if st.button("⬅️ Anterior"):
-        if st.session_state.page > 0:
-            st.session_state.page -= 1
+    if st.button("⬅️ Anterior") and st.session_state.page > 0:
+        st.session_state.page -= 1
 with col3:
-    if st.button("Siguiente ➡️"):
-        valid = [validar_pagina_0, validar_pagina_1, validar_pagina_2][st.session_state.page]() if st.session_state.page < 3 else True
-        if valid:
-            st.session_state.page += 1
-        else:
-            st.warning("⚠️ Por favor completa todos los campos antes de continuar.")
+    if st.session_state.page != 1 and st.button("Siguiente ➡️"):
+        validadores = [validar_pagina_0, None, validar_pagina_2]
+        if st.session_state.page < 3:
+            if validadores[st.session_state.page]() if validadores[st.session_state.page] else True:
+                st.session_state.page += 1
+            else:
+                st.warning("⚠️ Por favor completa todos los campos antes de continuar.")
 
+# --- Progreso ---
 progress_value = min((st.session_state.page + 1) / len(pages), 1.0)
 st.progress(progress_value, text=f"Progreso: Página {st.session_state.page + 1} de {len(pages)}")
