@@ -13,13 +13,62 @@ pages = ["👩🏻‍🦰👨🏻‍🦰 Datos Generales", "🩺 Salud y Hábito
 
 # --- Estilos ---
 st.markdown("""
-    <style>
-    .stApp { background-color: #f2f6fc; font-family: 'Segoe UI', sans-serif; }
-    .card { background-color: white; padding: 2rem; border-radius: 15px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05); margin-bottom: 2rem; }
-    .titulo-azul { font-size: 42px; font-weight: 700; color: #1a5276; text-align: center; margin-bottom: 1rem; }
-    .subtitulo-negro { font-size: 24px; font-weight: 600; color: #212121; text-align: center; margin-bottom: 20px; }
-    </style>
+<style>
+/* Estilos base (modo claro) */
+body, .stApp {
+    background-color: #f2f6fc;
+    color: #000000;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Caja tipo tarjeta */
+.card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    color: #000000;
+}
+
+/* Títulos personalizados */
+.titulo-azul {
+    font-size: 42px;
+    font-weight: 700;
+    color: #1a5276;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.subtitulo-negro {
+    font-size: 24px;
+    font-weight: 600;
+    color: #212121;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Adaptación automática al modo oscuro */
+@media (prefers-color-scheme: dark) {
+    body, .stApp {
+        background-color: #0e1117 !important;
+        color: #ffffff !important;
+    }
+
+    .card {
+        background-color: #1e222d !important;
+        color: #ffffff !important;
+        box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.05);
+    }
+
+    .titulo-azul {
+        color: #4ea1f2 !important;
+    }
+
+    .subtitulo-negro {
+        color: #e0e0e0 !important;
+    }
+}
+</style>
 """, unsafe_allow_html=True)
 
 # --- Mostrar título dinámico con emoji ---
@@ -64,17 +113,32 @@ if "data" not in st.session_state:
 if "phq_answers" not in st.session_state:
     st.session_state.phq_answers = [None] * 9
 data = st.session_state.data
+# --- Validadores de página ---
+def validar_pagina_0():
+    return all(k in data for k in ['SEXVAR', '_AGEG5YR', '_EDUCAG', '_INCOMG1', 'EMPLOY1', 'MARITAL'])
+
+def validar_pagina_2():
+    return None not in st.session_state.phq_answers
 
 # --- Página 0: Datos Generales ---
 if st.session_state.page == 0:
     with st.container():
         st.markdown('<div class="card">', unsafe_allow_html=True)
-        data['SEXVAR'] = sex_map[st.radio("Sexo", list(sex_map.keys()))]
-        data['_AGEG5YR'] = edad_map[st.selectbox("Edad", list(edad_map.keys()))]
-        data['_EDUCAG'] = educ_map[st.selectbox("Nivel educativo", list(educ_map.keys()))]
-        data['_INCOMG1'] = income_map[st.selectbox("Nivel de ingresos", list(income_map.keys()))]
-        data['EMPLOY1'] = employ_map[st.selectbox("Situación laboral", list(employ_map.keys()))]
-        data['MARITAL'] = marital_map[st.selectbox("Estado civil", list(marital_map.keys()))]
+        with st.form(key="form_pagina0"):
+            data['SEXVAR'] = sex_map[st.radio("Sexo", list(sex_map.keys()))]
+            data['_AGEG5YR'] = edad_map[st.selectbox("Edad", list(edad_map.keys()))]
+            data['_EDUCAG'] = educ_map[st.selectbox("Nivel educativo", list(educ_map.keys()))]
+            data['_INCOMG1'] = income_map[st.selectbox("Nivel de ingresos", list(income_map.keys()))]
+            data['EMPLOY1'] = employ_map[st.selectbox("Situación laboral", list(employ_map.keys()))]
+            data['MARITAL'] = marital_map[st.selectbox("Estado civil", list(marital_map.keys()))]
+
+            submitted = st.form_submit_button("Guardar y continuar ➡️")
+            if submitted:
+                if validar_pagina_0():
+                    st.session_state.page += 1
+                    st.rerun()
+                else:
+                    st.warning("⚠️ Por favor completa todos los campos antes de continuar.")
         st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Página 1: Salud y Hábitos ---
@@ -223,7 +287,8 @@ with col1:
     if st.button("⬅️ Anterior") and st.session_state.page > 0:
         st.session_state.page -= 1
 with col3:
-    if st.session_state.page != 1 and st.button("Siguiente ➡️"):
+    # Oculta el botón "Siguiente ➡️" en la Página 0 y 1 (ambas tienen formularios con sus propios botones)
+    if st.session_state.page not in [0, 1] and st.button("Siguiente ➡️"):
         validadores = [validar_pagina_0, None, validar_pagina_2]
         if st.session_state.page < 3:
             if validadores[st.session_state.page]() if validadores[st.session_state.page] else True:
